@@ -1,9 +1,9 @@
 // <mongoose.ts>
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URL = process.env.MONGODB_URL;
 
-if (!MONGODB_URI) {
+if (!MONGODB_URL) {
   throw new Error("Please define the MONGODB_URI environment variable");
 }
 
@@ -30,7 +30,7 @@ async function connectToDatabase(): Promise<typeof mongoose> {
   if (!cached!.promise) {
     const opts = { bufferCommands: false };
 
-    cached!.promise = mongoose.connect(MONGODB_URI!, opts).then((m) => {
+    cached!.promise = mongoose.connect(MONGODB_URL!, opts).then((m) => {
       console.log("✅ MongoDB Connected via Mongoose");
       return m;
     });
