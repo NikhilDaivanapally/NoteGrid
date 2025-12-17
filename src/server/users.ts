@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth/auth";
-import { registerSchema } from "@/lib/validations";
+import { loginSchema, registerSchema } from "@/lib/validations";
 import { ActionResponse } from "@/types/actions";
 import z from "zod";
 
@@ -48,7 +48,6 @@ export const registerUser = async (
 };
 
 export const verifyEmail = async (email: string): Promise<ActionResponse> => {
-  
   if (!email) {
     return {
       success: false,
@@ -77,6 +76,47 @@ export const verifyEmail = async (email: string): Promise<ActionResponse> => {
       success: false,
       message: errorMessage,
       error: {
+        message: errorMessage,
+      },
+    };
+  }
+};
+
+export const loginUser = async (
+  data: z.infer<typeof loginSchema>
+): Promise<ActionResponse> => {
+  const validated = loginSchema.safeParse(data);
+
+  if (!validated.success) {
+    return {
+      success: false,
+      message: "Check the form for errors",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    const res = await auth.api.signInEmail({
+      body: {
+        email: data.email,
+        password: data.password,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Login successful",
+      data: res,
+    };
+  } catch (err: any) {
+    console.log(err, err.body);
+    const errorMessage = err?.body?.message ?? "Failed to Login";
+
+    return {
+      success: false,
+      message: errorMessage,
+      error: {
+        code: err.body.code,
         message: errorMessage,
       },
     };
