@@ -17,12 +17,17 @@ type PasswordInputProps = {
   control: any;
   name: "password" | "confirmPassword";
   label: string;
+  showHints?: boolean;
 };
 
-export function PasswordInput({ control, name, label }: PasswordInputProps) {
+export function PasswordInput({
+  control,
+  name,
+  label,
+  showHints = false,
+}: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const Icon = showPassword ? EyeOffIcon : EyeIcon;
-  const isPassword = name === "password";
 
   return (
     <FormField
@@ -57,7 +62,7 @@ export function PasswordInput({ control, name, label }: PasswordInputProps) {
             </div>
           </FormControl>
 
-          {isPassword && (
+          {showHints && (
             <p className="text-xs text-muted-foreground">
               Must be at least 8 characters and include uppercase, lowercase,
               number, and special character.

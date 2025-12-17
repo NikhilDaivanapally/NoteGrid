@@ -34,68 +34,52 @@ import {
 import SocialAuthButtons from "../social-auth-buttons";
 import EmailVerification from "../auth/email-verification";
 
-import { registerUser } from "@/server/users";
-import { registerSchema } from "@/lib/validations";
+import { loginSchema } from "@/lib/validations";
 import { PasswordInput } from "../ui/password-input";
+import { loginUser } from "@/server/users";
+import { useRouter } from "next/navigation";
+import { verifyEmail as sendVerificationEmail } from "@/server/users";
 
-type RegisterFormData = z.infer<typeof registerSchema>;
+type LoginFormData = z.infer<typeof loginSchema>;
 
-const RegisterForm = () => {
+const LoginForm = () => {
+  const router = useRouter();
   const [verifyEmail, setVerifyEmail] = useState<string | null>(null);
-
-  const form = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await registerUser(data);
+      const loginResponse = await loginUser(data);
 
-      // SUCCESS
-      if (response?.success) {
-        const { email, emailVerified } = response.data.user;
-
-        if (!emailVerified) {
-          setVerifyEmail(email);
-        }
-
-        toast.success(response.message ?? "Registration successful");
+      if (loginResponse.success) {
+        router.push("/dashboard");
         return;
       }
 
-      // FIELD ERRORS (validation)
-      if (response?.fieldErrors) {
-        const fields = Object.keys(response.fieldErrors) as Array<
-          keyof RegisterFormData
-        >;
+      if (loginResponse.error?.code === "EMAIL_NOT_VERIFIED") {
+        const resendResponse = await sendVerificationEmail(data.email);
 
-        if (fields.length > 0) {
-          form.setFocus(fields[0]);
+        if (resendResponse?.success) {
+          toast.success(resendResponse.message ?? "Verification email resent!");
+          setVerifyEmail(data.email);
+        } else {
+          toast.error(
+            resendResponse?.message ?? "Failed to resend verification email"
+          );
         }
-
-        fields.forEach((field) => {
-          const message = response.fieldErrors?.[field]?.[0];
-          if (!message) return;
-
-          form.setError(field, {
-            type: "server",
-            message,
-          });
-        });
-
-        toast.error(response.message ?? "Please fix the highlighted errors");
         return;
       }
 
-      // FALLBACK ERROR
-      toast.error(response?.message ?? "Registration failed");
+      // Fallback for other auth failures
+      toast.error(loginResponse.message ?? "Invalid email or password");
     } catch (error) {
+      console.error("Login error:", error);
       toast.error("Something went wrong. Please try again.");
     }
   };
@@ -104,9 +88,9 @@ const RegisterForm = () => {
     return (
       <Card className="w-full shadow-none border-none max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Create your account</CardTitle>
+          <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
-            Enter your details to create your account
+            Enter your email and password below to sign in to your account
           </CardDescription>
         </CardHeader>
 
@@ -117,25 +101,13 @@ const RegisterForm = () => {
             <FieldSeparator>Or continue with</FieldSeparator>
           </FieldGroup>
 
-          <FieldGroup>
-            <Form {...form}>
+          <Form {...form}>
+            <FieldGroup>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
+                noValidate
               >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="John Doe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <FormField
                   control={form.control}
                   name="email"
@@ -143,46 +115,58 @@ const RegisterForm = () => {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="john@example.com" {...field} />
+                        <Input
+                          placeholder="john@example.com"
+                          autoComplete="email"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <PasswordInput
                   name="password"
                   label="Password"
                   control={form.control}
-                  showHints={true}
                 />
-                <PasswordInput
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  control={form.control}
-                />
+
+                <div className="flex justify-end">
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm underline-offset-4 hover:underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+
+                {form.formState.errors.root?.message && (
+                  <p className="text-sm text-destructive text-center">
+                    {form.formState.errors.root.message}
+                  </p>
+                )}
+
                 <Field>
                   <Button
                     type="submit"
                     className="w-full"
                     disabled={form.formState.isSubmitting}
                   >
-                    {form.formState.isSubmitting ? (
-                      <Spinner className="size-6" />
-                    ) : (
-                      "Create Account"
+                    {form.formState.isSubmitting && (
+                      <Spinner className="mr-2 size-4" />
                     )}
+                    Login
                   </Button>
 
-                  <FieldDescription className="flex justify-center items-center gap-2">
-                    Already have an account ?
-                    <Link href="/login" className="">
-                      login
-                    </Link>
+                  <FieldDescription className="flex justify-center gap-2">
+                    Don't have an account?
+                    <Link href="/register">Create</Link>
                   </FieldDescription>
                 </Field>
               </form>
-            </Form>
-          </FieldGroup>
+            </FieldGroup>
+          </Form>
         </CardContent>
       </Card>
     );
@@ -200,4 +184,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default LoginForm;

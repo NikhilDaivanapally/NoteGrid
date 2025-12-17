@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth/auth-client";
 import { verifyEmail } from "@/server/users";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
