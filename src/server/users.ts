@@ -1,7 +1,11 @@
 "use server";
 
 import { auth } from "@/lib/auth/auth";
-import { loginSchema, registerSchema } from "@/lib/validations";
+import {
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+} from "@/lib/validations";
 import { ActionResponse } from "@/types/actions";
 import z from "zod";
 
@@ -155,6 +159,50 @@ export const forgotPassword = async (
       success: false,
       message: errorMessage,
       error: { message: errorMessage },
+    };
+  }
+};
+
+export const resetPassword = async (data: {
+  password: string;
+  confirmPassword: string;
+  token: string;
+}): Promise<ActionResponse> => {
+  const validated = resetPasswordSchema.safeParse({
+    password: data.password,
+    confirmPassword: data.confirmPassword,
+  });
+
+  if (!validated.success) {
+    return {
+      success: false,
+      message: "Check the form for errors",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+  try {
+    await auth.api.resetPassword({
+      body: {
+        newPassword: data.password,
+        token: data.token,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Password reset successfully",
+      data: "",
+    };
+  } catch (err: any) {
+    const errorMessage = err?.body?.message ?? "Failed to reset the password";
+
+    return {
+      success: false,
+      message: errorMessage,
+      error: {
+        code: err.body.code,
+        message: errorMessage,
+      },
     };
   }
 };
