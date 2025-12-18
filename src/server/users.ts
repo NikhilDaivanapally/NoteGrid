@@ -122,3 +122,39 @@ export const loginUser = async (
     };
   }
 };
+
+export const forgotPassword = async (
+  email: string
+): Promise<ActionResponse> => {
+  if (!email) {
+    return {
+      success: false,
+      message: "Email is required",
+    };
+  }
+
+  try {
+    await auth.api.requestPasswordReset({
+      body: {
+        email,
+        redirectTo: "/reset-password",
+      },
+    });
+
+    return {
+      success: true,
+      message:
+        "If an account exists for this email, a password reset link has been sent.",
+      data: "",
+    };
+  } catch (err: any) {
+    const errorMessage =
+      err?.body?.message ?? "Unable to process password reset request";
+
+    return {
+      success: false,
+      message: errorMessage,
+      error: { message: errorMessage },
+    };
+  }
+};

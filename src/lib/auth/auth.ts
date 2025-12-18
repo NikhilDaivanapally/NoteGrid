@@ -6,6 +6,7 @@ import { Db } from "mongodb";
 import { lastLoginMethod } from "better-auth/plugins";
 import { sendVerifyEmail } from "../emails/sendVerifyEmail";
 import { nextCookies } from "better-auth/next-js";
+import { sendResetPasswordEmail } from "../emails/sendResetPasswordEmail";
 
 await connectToDatabase();
 
@@ -17,6 +18,9 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendResetPasswordEmail({ user, url });
+    },
   },
   emailVerification: {
     autoSignInAfterVerification: true,
