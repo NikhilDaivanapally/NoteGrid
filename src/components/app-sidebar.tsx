@@ -17,14 +17,11 @@ import {
 import { sidebarNav } from "@/lib/sidebar-nav";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-
-const user = {
-  name: "user",
-  email: "user@example.com",
-  avatar: "",
-};
+import { useGetUserQuery } from "@/store/api/userApi";
+import { Skeleton } from "./ui/skeleton";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const { isFetching, data: user } = useGetUserQuery({});
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
 
@@ -74,7 +71,17 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <Settings2 size={18} />
           <span>Settings</span>
         </SidebarMenuButton>
-        <NavUser user={user} />
+        {isFetching && !user ? (
+          <div className="h-12 w-full p-2 flex items-center gap-2">
+            <Skeleton className="h-8 w-8 p-2 bg-black/10 rounded-full" />
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-2.5 w-1/2 bg-black/10" />
+              <Skeleton className="h-2.5 w-full bg-black/10" />
+            </div>
+          </div>
+        ) : (
+          <NavUser user={user?.user} />
+        )}
       </SidebarFooter>
 
       <SidebarRail />
