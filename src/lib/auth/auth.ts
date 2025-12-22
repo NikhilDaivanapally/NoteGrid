@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import connectToDatabase from "../mongoose";
+import connectToDatabase from "../../db/mongoose";
 import mongoose from "mongoose";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { Db } from "mongodb";
