@@ -1,15 +1,4 @@
-import { Types } from "mongoose";
-
-export interface NoteDocument {
-  _id: Types.ObjectId;
-  userId: Types.ObjectId;
-  title: string;
-  content: JSON;
-  isFavorite: boolean;
-  isPinned: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Shared / API-safe (used by API routes, RTK Query, UI compoennts)
 
 export interface Note {
   _id: string;

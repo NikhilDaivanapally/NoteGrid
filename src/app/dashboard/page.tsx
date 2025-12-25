@@ -1,5 +1,11 @@
+import PageWrapper from "@/components/layout/page-wrapper";
+
 const page = () => {
-  return <div className="flex flex-1 flex-col gap-4 p-4 pt-0"></div>;
+  return (
+    <PageWrapper>
+      <div className=""></div>
+    </PageWrapper>
+  );
 };
 
 export default page;

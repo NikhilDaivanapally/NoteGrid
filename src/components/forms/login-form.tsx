@@ -31,7 +31,7 @@ import {
   FieldGroup,
   FieldSeparator,
 } from "@/components/ui/field";
-import SocialAuthButtons from "../social-auth-buttons";
+import SocialAuthButtons from "../auth/social-auth-buttons";
 import EmailVerification from "../auth/email-verification";
 
 import { loginSchema } from "@/lib/validations";
