@@ -1,10 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Settings2 } from "lucide-react";
-
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/components/layout/nav-main";
+import { NavUser } from "@/components/layout/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -12,18 +10,13 @@ import {
   SidebarHeader,
   SidebarMenuButton,
   SidebarRail,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { sidebarNav } from "@/lib/sidebar-nav";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { useGetUserQuery } from "@/store/api/userApi";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "../ui/skeleton";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { isFetching, data: user } = useGetUserQuery({});
-  const router = useRouter();
-  const { setOpenMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -60,17 +53,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarMenuButton
-          tooltip={"settings"}
-          onClick={() => {
-            setOpenMobile(false);
-            router.push("/dashboard/settings");
-          }}
-          className={cn("gap-2 cursor-pointer flex justify-center")}
-        >
-          <Settings2 size={18} />
-          <span>Settings</span>
-        </SidebarMenuButton>
         {isFetching && !user ? (
           <div className="h-12 w-full p-2 flex items-center gap-2">
             <Skeleton className="h-8 w-8 p-2 bg-black/10 rounded-full" />

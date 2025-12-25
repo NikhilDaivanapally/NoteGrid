@@ -1,54 +1,20 @@
-import { NotesResponse, Note } from "@/types/notes";
+// import { NotesResponse, Note } from "@/types/notes";
+import { Note, NotesResponse } from "@/types/notes/note";
 import { apiSlice } from "./apiSlice";
-
-export interface GetNotesArgs {
-  page?: number;
-  limit?: number;
-  search?: string;
-  dateForm?: Date | string;
-  dateTo?: Date | string;
-  isFavorite?: boolean;
-  isPinned?: boolean;
-  sortBy?: string;
-  sortOrder?: string;
-}
+import { DEFAULT_NOTE_QUERY } from "@/lib/constants/note-query";
 
 export const noteApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getNotes: builder.query<NotesResponse, GetNotesArgs>({
-      query: ({
-        page = 1,
-        limit = 20,
-        search = "",
-        dateForm,
-        dateTo,
-        isFavorite = false,
-        isPinned = false,
-        sortBy = "updatedAt",
-        sortOrder = "desc",
-      }) => {
-        const params = new URLSearchParams({
-          page: String(page),
-          limit: String(limit),
-          sortBy,
-          sortOrder,
-          isFavorite: String(isFavorite),
-          isPinned: String(isPinned),
-        });
-
-        if (search) params.append("search", search);
-        // Ensure Dates are converted to ISO strings for the URL
-        if (dateForm)
-          params.append(
-            "dateFrom",
-            dateForm instanceof Date ? dateForm.toISOString() : dateForm
-          );
-        if (dateTo)
-          params.append(
-            "dateTo",
-            dateTo instanceof Date ? dateTo.toISOString() : dateTo
-          );
-
+    getNotes: builder.query<NotesResponse, Partial<typeof DEFAULT_NOTE_QUERY>>({
+      query: (DEFAULT_NOTE_QUERY) => {
+        const params = new URLSearchParams(
+          Object.entries(DEFAULT_NOTE_QUERY)
+            .filter(
+              ([_, value]) =>
+                value !== undefined && value !== null && value !== ""
+            ) // only truthy values are added to url
+            .map(([key, value]) => [key, String(value)])
+        );
         return `/notes?${params.toString()}`;
       },
 
@@ -216,3 +182,5 @@ export const noteApi = apiSlice.injectEndpoints({
   }),
   overrideExisting: false,
 });
+
+export const { useGetNotesQuery } = noteApi;

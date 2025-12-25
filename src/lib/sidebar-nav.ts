@@ -1,4 +1,4 @@
-import { BookOpen, Star, Pin, LayoutDashboard } from "lucide-react";
+import { BookOpen, Star, Pin, LayoutDashboard, Settings2 } from "lucide-react";
 
 export const sidebarNav = [
   {
@@ -8,7 +8,7 @@ export const sidebarNav = [
   },
   {
     title: "All Notes",
-    href: "/dashboard/all",
+    href: "/dashboard/notes",
     icon: BookOpen,
   },
   {
@@ -20,5 +20,11 @@ export const sidebarNav = [
     title: "Pinned",
     href: "/dashboard/pinned",
     icon: Pin,
+  },
+
+  {
+    title: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings2,
   },
 ];
