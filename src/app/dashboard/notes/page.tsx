@@ -1,32 +1,21 @@
 "use client";
 
 import PageWrapper from "@/components/layout/page-wrapper";
-import NotesContainer from "@/components/notes/notes-container";
-import NotesFilter from "@/components/notes/notes-filter";
-import { useSyncFiltersWithUrl } from "@/hooks/use-sync-filters-with-url";
+import NotesPage from "@/components/notes/notes-page";
 import { normalizeNoteQuery } from "@/lib/utils/normalize-note-query";
-import { use, useState } from "react";
-import {DEFAULT_NOTE_QUERY} from '@/lib/constants/note-query'
-const page = ({
+import { use } from "react";
+
+export default function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) => {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const params = use(searchParams);
-
-  const query = normalizeNoteQuery(params);
-
-  const [filters, setFilters] = useState<typeof DEFAULT_NOTE_QUERY>(query);
-
-  // Sync Urls and filters
-  useSyncFiltersWithUrl(filters);
+  const initialFilters = normalizeNoteQuery(params);
 
   return (
     <PageWrapper>
-      <NotesFilter filters={filters} onChange={setFilters} />
-      <NotesContainer filters={filters} />
+      <NotesPage initialFilters={initialFilters} />
     </PageWrapper>
   );
-};
-
-export default page;
+}

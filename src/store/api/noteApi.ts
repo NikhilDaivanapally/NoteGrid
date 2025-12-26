@@ -6,9 +6,9 @@ import { DEFAULT_NOTE_QUERY } from "@/lib/constants/note-query";
 export const noteApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getNotes: builder.query<NotesResponse, Partial<typeof DEFAULT_NOTE_QUERY>>({
-      query: (DEFAULT_NOTE_QUERY) => {
+      query: (args) => {
         const params = new URLSearchParams(
-          Object.entries(DEFAULT_NOTE_QUERY)
+          Object.entries(args)
             .filter(
               ([_, value]) =>
                 value !== undefined && value !== null && value !== ""
@@ -18,15 +18,32 @@ export const noteApi = apiSlice.injectEndpoints({
         return `/notes?${params.toString()}`;
       },
 
-      serializeQueryArgs: ({ endpointName }) => endpointName,
-
-      merge: (currentCache, newResponse) => {
-        currentCache.data.push(...newResponse.data);
-        currentCache.meta = newResponse.meta;
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        const { page, ...rest } = queryArgs ?? {};
+        return `${endpointName}-${JSON.stringify(rest)}`;
       },
 
+      merge: (currentCache, newResponse, { arg }) => {
+        if (arg?.page === 1) {
+          currentCache.data = newResponse.data;
+        } else {
+          currentCache.data.push(...newResponse.data);
+        }
+        currentCache.meta = newResponse.meta;
+      },
       forceRefetch({ currentArg, previousArg }) {
-        return currentArg?.page !== previousArg?.page;
+        if (!currentArg || !previousArg) return true;
+
+        // allow pagination fetch
+        if (currentArg.page !== previousArg.page) {
+          return true;
+        }
+
+        const { page: _, ...curr } = currentArg;
+        const { page: __, ...prev } = previousArg;
+
+        // refetch when filters change
+        return JSON.stringify(curr) !== JSON.stringify(prev);
       },
     }),
 

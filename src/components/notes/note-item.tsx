@@ -1,37 +1,90 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Note } from "@/types/notes/note";
 import { cn } from "@/lib/utils";
+import { Pin, Star } from "lucide-react";
+import { Button } from "../ui/button";
 
 type Props = {
   note: Note;
-  view: "grid" | "list";
 };
 
-function NoteItemComponent({ note, view }: Props) {
+function NoteItemComponent({ note }: Props) {
+  const [isFavorite, setIsFavorite] = useState(note.isFavorite);
+  const [isPinned, setIsPinned] = useState(note.isPinned);
+
+  const onFavorite = async () => {};
+
+  const onPin = async () => {};
+
   return (
     <article
       className={cn(
-        "group bg-secondary flex flex-col gap-1 dark:bg-surface-dark rounded-3xl border border-transparent hover:border-primary/40 transition-all cursor-pointer",
-        view === "grid"
-          ? "p-6 h-56 hover:shadow-lg"
-          : "p-4 mb-3 hover:shadow-md"
+        "group relative flex flex-col gap-3",
+        "h-56 rounded-3xl p-4",
+        "bg-secondary dark:bg-surface-dark",
+        "border border-transparent",
+        "hover:border-primary/40 hover:shadow-lg",
+        "transition-all"
       )}
     >
       {/* Header */}
-      <h3 className="text-lg font-bold truncate">{note.title}</h3>
+      <div className="flex items-start gap-2">
+        <h3 className="flex-1 text-base font-semibold truncate">
+          {note.title || "Untitled"}
+        </h3>
+
+        <div className="flex gap-1">
+          <button
+            onClick={onFavorite}
+            className="text-muted-foreground hover:text-yellow-500"
+          >
+            <Star
+              className={cn(
+                "size-4",
+                isFavorite && "fill-yellow-400 text-yellow-400"
+              )}
+            />
+          </button>
+
+          <button
+            onClick={onPin}
+            className="text-muted-foreground hover:text-primary"
+          >
+            <Pin
+              className={cn("size-4", isPinned && "fill-primary text-primary")}
+            />
+          </button>
+        </div>
+      </div>
 
       {/* Content */}
-      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 flex-1">
+      <p className="flex-1 text-sm text-muted-foreground line-clamp-4">
         {typeof note.content === "string"
           ? note.content
           : JSON.stringify(note.content)}
       </p>
 
       {/* Footer */}
-      <div className="text-xs font-semibold text-gray-400 ">
-        Updated {new Date(note.updatedAt).toLocaleDateString()}
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span>
+          Updated{" "}
+          {new Date(note.updatedAt).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </span>
+
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button size="sm" variant="ghost">
+            View
+          </Button>
+          <Button size="sm" variant="ghost" className="text-destructive">
+            Delete
+          </Button>
+        </div>
       </div>
     </article>
   );

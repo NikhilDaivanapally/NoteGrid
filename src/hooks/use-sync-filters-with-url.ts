@@ -7,6 +7,7 @@ export function useSyncFiltersWithUrl(filters: typeof DEFAULT_NOTE_QUERY) {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     Object.entries(filters).forEach(([key, value]) => {
+      if (key === "page") return;
       const defaultValue =
         DEFAULT_NOTE_QUERY[key as keyof typeof DEFAULT_NOTE_QUERY];
 

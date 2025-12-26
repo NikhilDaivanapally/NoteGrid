@@ -6,34 +6,6 @@ import Note from "@/db/models/note.model";
 import { Types } from "mongoose";
 
 // GET ALL NOTES
-// export async function GET() {
-//   try {
-//     await connectToDatabase();
-
-//     const session = await auth.api.getSession({
-//       headers: await headers(),
-//     });
-
-//     if (!session?.user) {
-//       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-//     }
-
-//     const notes = await Note.find({ userId: session.user.id }).sort({
-//       isPinned: -1,
-//       createdAt: -1,
-//     });
-//     console.log(notes,'notes')
-
-//     return NextResponse.json({ data: notes }, { status: 200 });
-//   } catch (error) {
-//     console.error("[GET /api/notes]", error);
-//     return NextResponse.json(
-//       { message: "Internal server error" },
-//       { status: 500 }
-//     );
-//   }
-// }
-
 export async function GET(req: Request) {
   try {
     await connectToDatabase();
@@ -70,7 +42,7 @@ export async function GET(req: Request) {
     }
 
     // Status filter
-    if (status === "favorites") query.isFavorite = true;
+    if (status === "favorite") query.isFavorite = true;
     if (status === "pinned") query.isPinned = true;
 
     // Date range
@@ -107,7 +79,7 @@ export async function GET(req: Request) {
           limit,
           total,
           totalPages: Math.ceil(total / limit),
-          hasMore: Math.ceil(total / limit) - page ? true : false,
+          hasMore: Math.ceil(total / limit) - page > 0 ? true : false,
         },
       },
       { status: 200 }
