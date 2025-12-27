@@ -69,6 +69,7 @@ export const noteApi = apiSlice.injectEndpoints({
                 isFavorite: false,
                 isPinned: false,
                 createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
               } as Note);
             }
           )
@@ -200,4 +201,9 @@ export const noteApi = apiSlice.injectEndpoints({
   overrideExisting: false,
 });
 
-export const { useGetNotesQuery } = noteApi;
+export const {
+  useGetNotesQuery,
+  useCreateNoteMutation,
+  useUpdateNoteMutation,
+  useDeleteNoteMutation,
+} = noteApi;
