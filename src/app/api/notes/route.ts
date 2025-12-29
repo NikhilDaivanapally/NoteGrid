@@ -105,6 +105,7 @@ export async function POST(req: NextRequest) {
     }
     const body = await req.json();
     const { title, content } = body;
+    console.log(JSON.stringify(content, null, 2), "content");
 
     if (!title || !content) {
       return NextResponse.json(

@@ -12,7 +12,7 @@ const NoteSchema = new Schema<NoteDocument>(
     },
 
     content: {
-      type: String,
+      type: Object,
       required: true,
     },
 
