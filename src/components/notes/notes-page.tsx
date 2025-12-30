@@ -4,6 +4,9 @@ import { useNotesFilters } from "@/hooks/use-notes-filters";
 import { useSyncFiltersWithUrl } from "@/hooks/use-sync-filters-with-url";
 import NotesFilter from "./notes-filter";
 import NotesContainer from "./notes-container";
+import { PlusIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function NotesPage({ initialFilters }: any) {
   const { filters, updateFilters, nextPage } = useNotesFilters(initialFilters);
@@ -14,6 +17,15 @@ export default function NotesPage({ initialFilters }: any) {
     <>
       <NotesFilter filters={filters} onChange={updateFilters} />
       <NotesContainer filters={filters} onLoadMore={nextPage} />
+      <Button
+        className="fixed bottom-5 right-5 sm:bottom-10 sm:right-10 rounded-full"
+        asChild
+      >
+        <Link href={"/dashboard/notes/new"}>
+          <PlusIcon className="size-5 md:size-6" />
+          <span>New Note</span>
+        </Link>
+      </Button>
     </>
   );
 }

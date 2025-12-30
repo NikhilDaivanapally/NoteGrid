@@ -47,7 +47,7 @@ export const noteApi = apiSlice.injectEndpoints({
       },
     }),
 
-    getNote: builder.query<Note, string>({
+    getNoteById: builder.query<Note, string>({
       query: (id) => `/notes/${id}`,
     }),
 
@@ -92,27 +92,31 @@ export const noteApi = apiSlice.injectEndpoints({
       },
     }),
 
-    updateNote: builder.mutation<Note, Partial<Note> & { id: string }>({
-      query: ({ id, ...body }) => ({
-        url: `/notes/${id}`,
+    updateNote: builder.mutation<Note, Partial<Note>>({
+      query: ({ _id, ...body }) => ({
+        url: `/notes/${_id}`,
         method: "PUT",
         body,
       }),
-      async onQueryStarted({ id, ...body }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ _id, ...body }, { dispatch, queryFulfilled }) {
         const patchList = dispatch(
           noteApi.util.updateQueryData(
             "getNotes",
             { page: 1, limit: 20 },
             (draft) => {
-              const note = draft.data.find((n) => n._id === id);
+              const note = draft.data.find((n) => n._id === _id);
               if (note) Object.assign(note, body);
             }
           )
         );
         const patchSingle = dispatch(
-          noteApi.util.updateQueryData("getNote", id, (draft) => {
-            Object.assign(draft, body);
-          })
+          noteApi.util.updateQueryData(
+            "getNoteById",
+            _id as string,
+            (draft) => {
+              Object.assign(draft, body);
+            }
+          )
         );
         try {
           await queryFulfilled;
@@ -132,7 +136,7 @@ export const noteApi = apiSlice.injectEndpoints({
         const patchResult = dispatch(
           noteApi.util.updateQueryData(
             "getNotes",
-            { page: 1, limit: 20 },
+            { ...DEFAULT_NOTE_QUERY, page: 1 },
             (draft) => {
               draft.data = draft.data.filter((n) => n._id !== id);
             }
@@ -203,6 +207,7 @@ export const noteApi = apiSlice.injectEndpoints({
 
 export const {
   useGetNotesQuery,
+  useGetNoteByIdQuery,
   useCreateNoteMutation,
   useUpdateNoteMutation,
   useDeleteNoteMutation,

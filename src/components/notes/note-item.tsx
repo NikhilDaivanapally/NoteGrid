@@ -6,14 +6,19 @@ import { cn } from "@/lib/utils";
 import { Pin, Star } from "lucide-react";
 import { Button } from "../ui/button";
 import EditorContentRenderer from "../editor/editor-content-renderer/editor-content-renderer";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Props = {
   note: Note;
+  onDelete: () => void;
 };
 
-function NoteItemComponent({ note }: Props) {
+function NoteItemComponent({ note, onDelete }: Props) {
   const [isFavorite, setIsFavorite] = useState(note.isFavorite);
   const [isPinned, setIsPinned] = useState(note.isPinned);
+
+  const router = useRouter();
 
   const onFavorite = async () => {};
 
@@ -61,13 +66,13 @@ function NoteItemComponent({ note }: Props) {
       </div>
 
       {/* Content */}
-      <p className="flex-1 text-sm text-muted-foreground line-clamp-4">
+      <div className="flex-1 text-sm text-muted-foreground line-clamp-4">
         {typeof note.content === "object" && (
           <EditorContentRenderer content={note.content} />
         )}
 
         {typeof note.content !== "object" && note.content}
-      </p>
+      </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -80,11 +85,18 @@ function NoteItemComponent({ note }: Props) {
           })}
         </span>
 
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button size="sm" variant="ghost">
-            View
+        <div className="flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 sm:transition-opacity">
+          <Button size="sm" variant="ghost" asChild>
+            <Link prefetch href={`/dashboard/notes/${note._id}`}>
+              View
+            </Link>
           </Button>
-          <Button size="sm" variant="ghost" className="text-destructive">
+          <Button
+            onClick={onDelete}
+            size="sm"
+            variant="ghost"
+            className="text-destructive"
+          >
             Delete
           </Button>
         </div>
