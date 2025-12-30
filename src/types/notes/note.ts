@@ -1,10 +1,12 @@
-// Shared / API-safe (used by API routes, RTK Query, UI compoennts)
+// Shared / API-safe (used by API routes, RTK Query, UI components)
+
+import type { JSONContent } from "@tiptap/core";
 
 export interface Note {
   _id: string;
   userId: string;
   title: string;
-  content: string;
+  content: JSONContent;
   isFavorite: boolean;
   isPinned: boolean;
   createdAt: string;

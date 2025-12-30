@@ -1,9 +1,9 @@
-import { CreateNoteForm } from "../forms/create-note-form";
+import NoteForm from "../forms/note-form";
 
 const CreateNotePage = () => {
   return (
-    <div className="overflow-y-auto">
-      <CreateNoteForm />
+    <div className="p-4 overflow-y-auto">
+      <NoteForm mode="create" />
     </div>
   );
 };

@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
       content,
       userId: session.user.id,
     });
-    return NextResponse.json({ data: note }, { status: 201 });
+    return NextResponse.json({ ...note }, { status: 201 });
   } catch (error) {
     console.error("[POST /api/notes]", error);
     return NextResponse.json(
