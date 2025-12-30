@@ -1,0 +1,117 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": { "level": 1 },
+      "content": [{ "type": "text", "text": "Welcome to NoteGrid ✨" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Get started by writing your first note. This editor supports "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "highlight",
+              "attrs": { "color": "#FEF9C3" }
+            }
+          ],
+          "text": "rich formatting"
+        },
+        { "type": "text", "text": ", tasks, images, and more." }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "You can also add "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://tiptap.dev",
+                "target": "_blank"
+              }
+            }
+          ],
+          "text": "links"
+        },
+        {
+          "type": "text",
+          "text": " to your notes."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "Highlight text using different colors:" }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "highlight",
+              "attrs": { "color": "#E0F2FE" }
+            }
+          ],
+          "text": "Blue highlight"
+        },
+        { "type": "text", "text": ", " },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "highlight",
+              "attrs": { "color": "#D9ECDF" }
+            }
+          ],
+          "text": "Green highlight"
+        },
+        { "type": "text", "text": ", " },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "highlight",
+              "attrs": { "color": "#FFE4E6" }
+            }
+          ],
+          "text": "Red highlight"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "type": "text", "text": "Write code snippets easily:" }]
+    },
+    {
+      "type": "codeBlock",
+      "attrs": { "language": "js" },
+      "content": [
+        {
+          "type": "text",
+          "text": "function hello() {\n  console.log(\"Welcome to NoteGrid!\");\n}"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "type": "text", "text": "Happy writing! 🚀" }]
+    }
+  ]
+}

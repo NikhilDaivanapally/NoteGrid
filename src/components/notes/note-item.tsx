@@ -5,6 +5,7 @@ import { Note } from "@/types/notes/note";
 import { cn } from "@/lib/utils";
 import { Pin, Star } from "lucide-react";
 import { Button } from "../ui/button";
+import EditorContentRenderer from "../editor/editor-content-renderer/editor-content-renderer";
 
 type Props = {
   note: Note;
@@ -61,9 +62,11 @@ function NoteItemComponent({ note }: Props) {
 
       {/* Content */}
       <p className="flex-1 text-sm text-muted-foreground line-clamp-4">
-        {typeof note.content === "string"
-          ? note.content
-          : JSON.stringify(note.content)}
+        {typeof note.content === "object" && (
+          <EditorContentRenderer content={note.content} />
+        )}
+
+        {typeof note.content !== "object" && note.content}
       </p>
 
       {/* Footer */}
