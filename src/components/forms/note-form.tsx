@@ -45,7 +45,7 @@ const NoteForm = ({
         title,
         content: contentRef.current!,
       });
-      router.replace('/dashboard/notes')
+      router.back();
     } else {
       if (!noteId) return;
 

@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { useGetNotesQuery } from "@/store/api/noteApi";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { DEFAULT_LIMIT } from "@/lib/constants/pagination";
 import { TextShimmer } from "../ui/text-shimmer";
 import { NoteList } from "./note-list";
 import { hasActiveFilters } from "@/lib/utils/has-active-filters";
@@ -19,10 +18,7 @@ export default function NotesListContainer({
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { data, isFetching, isLoading } = useGetNotesQuery({
-    ...filters,
-    limit: DEFAULT_LIMIT,
-  });
+  const { data, isFetching, isLoading } = useGetNotesQuery(filters);
 
   useInfiniteScroll({
     ref: scrollRef,
@@ -51,7 +47,7 @@ export default function NotesListContainer({
             onCreate={() => {}}
           />
         ) : (
-          <NoteList notes={data?.data ?? []} />
+          <NoteList filters={filters} notes={data?.data ?? []} />
         )}
         {isFetching && filters.page !== 1 && (
           <div className="w-full text-center">Loading...</div>

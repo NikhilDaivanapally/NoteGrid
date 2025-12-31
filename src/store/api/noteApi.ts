@@ -61,7 +61,7 @@ export const noteApi = apiSlice.injectEndpoints({
         const patchResult = dispatch(
           noteApi.util.updateQueryData(
             "getNotes",
-            { page: 1, limit: 20 },
+            DEFAULT_NOTE_QUERY,
             (draft) => {
               draft.data.unshift({
                 ...body,
@@ -79,7 +79,7 @@ export const noteApi = apiSlice.injectEndpoints({
           dispatch(
             noteApi.util.updateQueryData(
               "getNotes",
-              { page: 1, limit: 20 },
+              DEFAULT_NOTE_QUERY,
               (draft) => {
                 const index = draft.data.findIndex((n) => n._id === "temp-id");
                 if (index !== -1) draft.data[index] = data;
@@ -102,7 +102,7 @@ export const noteApi = apiSlice.injectEndpoints({
         const patchList = dispatch(
           noteApi.util.updateQueryData(
             "getNotes",
-            { page: 1, limit: 20 },
+            DEFAULT_NOTE_QUERY,
             (draft) => {
               const note = draft.data.find((n) => n._id === _id);
               if (note) Object.assign(note, body);
@@ -127,20 +127,19 @@ export const noteApi = apiSlice.injectEndpoints({
       },
     }),
 
-    deleteNote: builder.mutation<{ success: boolean }, string>({
-      query: (id) => ({
+    deleteNote: builder.mutation<
+      { success: boolean },
+      { id: string; filters: typeof DEFAULT_NOTE_QUERY }
+    >({
+      query: ({ id }) => ({
         url: `/notes/${id}`,
         method: "DELETE",
       }),
-      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ id, filters }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
-          noteApi.util.updateQueryData(
-            "getNotes",
-            { ...DEFAULT_NOTE_QUERY, page: 1 },
-            (draft) => {
-              draft.data = draft.data.filter((n) => n._id !== id);
-            }
-          )
+          noteApi.util.updateQueryData("getNotes", filters, (draft) => {
+            draft.data = draft.data.filter((n) => n._id !== id);
+          })
         );
         try {
           await queryFulfilled;
@@ -150,49 +149,53 @@ export const noteApi = apiSlice.injectEndpoints({
       },
     }),
 
-    toggleFavorite: builder.mutation<Note, { id: string; isFavorite: boolean }>(
-      {
-        query: ({ id, isFavorite }) => ({
-          url: `/notes/${id}`,
-          method: "PUT",
-          body: { isFavorite },
-        }),
-        async onQueryStarted({ id, isFavorite }, { dispatch, queryFulfilled }) {
-          const patch = dispatch(
-            noteApi.util.updateQueryData(
-              "getNotes",
-              { page: 1, limit: 20 },
-              (draft) => {
-                const note = draft.data.find((n) => n._id === id);
-                if (note) note.isFavorite = isFavorite;
-              }
-            )
-          );
-          try {
-            await queryFulfilled;
-          } catch {
-            patch.undo();
-          }
-        },
-      }
-    ),
+    toggleFavorite: builder.mutation<
+      Note,
+      { id: string; isFavorite: boolean; filters: typeof DEFAULT_NOTE_QUERY }
+    >({
+      query: ({ id, isFavorite }) => ({
+        url: `/notes/${id}`,
+        method: "PUT",
+        body: { isFavorite },
+      }),
+      async onQueryStarted(
+        { id, isFavorite, filters },
+        { dispatch, queryFulfilled }
+      ) {
+        const patch = dispatch(
+          noteApi.util.updateQueryData("getNotes", filters, (draft) => {
+            const note = draft.data.find(
+              (n) => n._id.toString() === id.toString()
+            );
+            if (note) note.isFavorite = isFavorite;
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
+    }),
 
-    togglePinned: builder.mutation<Note, { id: string; isPinned: boolean }>({
+    togglePinned: builder.mutation<
+      Note,
+      { id: string; isPinned: boolean; filters: typeof DEFAULT_NOTE_QUERY }
+    >({
       query: ({ id, isPinned }) => ({
         url: `/notes/${id}`,
         method: "PUT",
         body: { isPinned },
       }),
-      async onQueryStarted({ id, isPinned }, { dispatch, queryFulfilled }) {
+      async onQueryStarted(
+        { id, isPinned, filters },
+        { dispatch, queryFulfilled }
+      ) {
         const patch = dispatch(
-          noteApi.util.updateQueryData(
-            "getNotes",
-            { page: 1, limit: 20 },
-            (draft) => {
-              const note = draft.data.find((n) => n._id === id);
-              if (note) note.isPinned = isPinned;
-            }
-          )
+          noteApi.util.updateQueryData("getNotes", filters, (draft) => {
+            const note = draft.data.find((n) => n._id === id);
+            if (note) note.isPinned = isPinned;
+          })
         );
         try {
           await queryFulfilled;
@@ -211,4 +214,6 @@ export const {
   useCreateNoteMutation,
   useUpdateNoteMutation,
   useDeleteNoteMutation,
+  useToggleFavoriteMutation,
+  useTogglePinnedMutation,
 } = noteApi;

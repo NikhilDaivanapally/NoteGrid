@@ -2,6 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Props = {
   title?: string;
@@ -28,7 +29,9 @@ export default function EmptyNotesState({
       </div>
 
       {/* CTA */}
-      <Button onClick={onCreate}>Create note</Button>
+      <Button onClick={onCreate} className="cursor-pointer" asChild>
+        <Link href={"/dashboard/notes/new"}>Create note</Link>
+      </Button>
     </div>
   );
 }
