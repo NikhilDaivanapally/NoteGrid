@@ -1,22 +1,35 @@
 "use client";
 
 import * as React from "react";
-import { NavMain } from "@/components/layout/nav-main";
 import { NavUser } from "@/components/layout/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
   SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { sidebarNav } from "@/lib/sidebar-nav";
 import { useGetUserQuery } from "@/store/api/userApi";
 import { Skeleton } from "../ui/skeleton";
+import { useSidebarMenu } from "@/hooks/use-sidebar-menu";
+import { useSidebar } from "@/components/ui/sidebar";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const router = useRouter();
+
   const { isFetching, data: user } = useGetUserQuery({});
+  const sections = useSidebarMenu();
+  const { open, setOpenMobile } = useSidebar();
+  console.log(open, "open-desktop-menu");
+  const pathname = usePathname();
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -49,7 +62,53 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={sidebarNav} />
+        {sections.map((section) => {
+          if (
+            !section.loading &&
+            section.hideIfEmpty &&
+            section.items.length === 0
+          ) {
+            return null;
+          }
+          if (section.id == "activity" && !open) {
+            return null;
+          }
+          return (
+            <SidebarGroup key={section.id}>
+              <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+              <SidebarMenu>
+                {section.items.map((item) => {
+                  const isActive =
+                    item.href === pathname && item.label !== "See more";
+                  if (section.loading) {
+                    return <Skeleton key={item.id} className="h-8 w-full bg-muted-foreground/10" />;
+                  }
+                  return (
+                    <SidebarMenuItem key={item.id}>
+                      <SidebarMenuButton
+                        tooltip={item.label}
+                        onClick={() => {
+                          setOpenMobile(false);
+                          router.push(item.href as string);
+                        }}
+                        className={cn(
+                          "gap-2 cursor-pointer",
+                          isActive && "bg-black/10 dark:bg-white/10"
+                        )}
+                        asChild
+                      >
+                        <Link href={item.href as string}>
+                          {item.icon && <item.icon size={18} />}
+                          <span>{item.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
 
       <SidebarFooter>

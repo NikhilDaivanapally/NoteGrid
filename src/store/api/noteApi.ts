@@ -51,6 +51,10 @@ export const noteApi = apiSlice.injectEndpoints({
       query: (id) => `/notes/${id}`,
     }),
 
+    getRecentNotes: builder.query<{ data: Note[] }, {limit:string}>({
+      query: ({limit}) => `/notes/recent?limit=${limit}`,
+    }),
+
     createNote: builder.mutation<Note, Partial<Note>>({
       query: (body) => ({
         url: "/notes",
@@ -211,6 +215,7 @@ export const noteApi = apiSlice.injectEndpoints({
 export const {
   useGetNotesQuery,
   useGetNoteByIdQuery,
+  useGetRecentNotesQuery,
   useCreateNoteMutation,
   useUpdateNoteMutation,
   useDeleteNoteMutation,
