@@ -18,6 +18,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useState } from "react";
+import useLogout from "@/hooks/use-logout";
+import { Spinner } from "../ui/spinner";
 
 export function NavUser({
   user,
@@ -29,11 +32,14 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const [open, setOpen] = useState(false);
+
+  const { handleLogout, isLoading } = useLogout();
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
@@ -87,15 +93,14 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User />
-                Profile
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? <Spinner /> : <LogOut />}
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

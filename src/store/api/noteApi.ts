@@ -51,7 +51,7 @@ export const noteApi = apiSlice.injectEndpoints({
       query: (id) => `/notes/${id}`,
     }),
 
-    getRecentNotes: builder.query<{ data: Note[] }, {limit:string}>({
+    getRecentNotes: builder.query<{ data: Note[] }, {limit:number}>({
       query: ({limit}) => `/notes/recent?limit=${limit}`,
     }),
 
