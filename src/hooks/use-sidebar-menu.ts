@@ -1,3 +1,4 @@
+"use client";
 import { sidebarConfig } from "@/lib/config/sidebar";
 import { useGetRecentNotesQuery } from "@/store/api/noteApi";
 import { SidebarItem, SidebarSection } from "@/types/sidebar";
@@ -24,12 +25,14 @@ export function useSidebarMenu(): SidebarSection[] {
           icon: StickyNote,
           href: `/dashboard/notes/${note._id}`,
         })) ?? [];
-      items.push({
-        id: "See more",
-        label: "See more",
-        icon: Ellipsis,
-        href: "/dashboard/notes",
-      });
+      if (data?.data.length) {
+        items.push({
+          id: "See more",
+          label: "See more",
+          icon: Ellipsis,
+          href: "/dashboard/notes",
+        });
+      }
     }
     return {
       ...section,
