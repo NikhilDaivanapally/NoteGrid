@@ -1,24 +1,24 @@
 "use client";
 
-import { NoteSortBy } from "@/types/notes/note-query";
+import { UsersSortBy } from "@/types/users/users-query";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../ui/select";
+} from "../../../ui/select";
 
 const SortFilter = ({
   value,
   onChange,
 }: {
-  value: NoteSortBy;
-  onChange: (value: NoteSortBy) => void;
+  value: UsersSortBy;
+  onChange: (value: UsersSortBy) => void;
 }) => {
   return (
-    <div className="flex md:flex-col xl:flex-row items-start xl:items-center gap-2 text-sm">
-      <span className="text-muted-foreground">Sort :</span>
+    <div className="flex flex-col gap-2 text-sm">
+      <span className="text-muted-foreground">Sort</span>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="w-34">
           <SelectValue placeholder="Sort By" />
@@ -26,7 +26,7 @@ const SortFilter = ({
         <SelectContent>
           <SelectItem value="updatedAt">Last Updated</SelectItem>
           <SelectItem value="createdAt">Created date</SelectItem>
-          <SelectItem value="title">Title (A-Z)</SelectItem>
+          <SelectItem value="name">Name (A-Z)</SelectItem>
         </SelectContent>
       </Select>
     </div>
