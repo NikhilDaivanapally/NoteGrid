@@ -68,6 +68,7 @@ export const auth = betterAuth({
         user,
       },
       adminUserIds: ["69577dbefa80aedfc712d9e6"],
+      bannedUserMessage: "You have been banned from this application",
     }),
     nextCookies(),
   ],
@@ -95,5 +96,15 @@ export const auth = betterAuth({
         },
       },
     },
+  },
+  hooks: {
+    // This runs every time a session is created (Login)
+    // afterSessionCreate: async (session, user) => {
+    //   if (user.isBanned) {
+    //     // This will prevent the login and throw an error to the client
+    //     throw new Error("ACCOUNT_BANNED");
+    //   }
+    // },
+    
   },
 });

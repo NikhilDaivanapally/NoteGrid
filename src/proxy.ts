@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth"; // Ensure this is your auth client/instance
+import { auth } from "@/lib/auth/auth";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -8,7 +8,10 @@ export async function proxy(request: NextRequest) {
   const session = await auth.api.getSession({
     headers: request.headers,
   });
-  const isAuthenticated = session?.user;
+
+  const user = session?.user;
+  const isAuthenticated = Boolean(user);
+  const isAdmin = user?.role === "admin";
 
   // AUTH PAGES
   if (isAuthenticated && (pathname === "/login" || pathname === "/register")) {
@@ -19,6 +22,12 @@ export async function proxy(request: NextRequest) {
   if (pathname.startsWith("/dashboard")) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL("/login", request.url));
+    }
+  }
+
+  if (pathname.startsWith("/dashboard/admin")) {
+    if (!isAdmin) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 
