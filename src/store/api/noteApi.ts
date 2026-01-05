@@ -1,4 +1,3 @@
-// import { NotesResponse, Note } from "@/types/notes";
 import { Note, NotesResponse } from "@/types/notes/note";
 import { apiSlice } from "./apiSlice";
 import { DEFAULT_NOTE_QUERY } from "@/lib/constants/note-query";
@@ -51,8 +50,8 @@ export const noteApi = apiSlice.injectEndpoints({
       query: (id) => `/notes/${id}`,
     }),
 
-    getRecentNotes: builder.query<{ data: Note[] }, {limit:number}>({
-      query: ({limit}) => `/notes/recent?limit=${limit}`,
+    getRecentNotes: builder.query<{ data: Note[] }, { limit: number }>({
+      query: ({ limit }) => `/notes/recent?limit=${limit}`,
     }),
 
     createNote: builder.mutation<Note, Partial<Note>>({

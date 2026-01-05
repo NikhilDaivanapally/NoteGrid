@@ -1,4 +1,3 @@
-// src/types/sidebar.ts
 import { LucideIcon } from "lucide-react";
 
 export type SidebarItem = {

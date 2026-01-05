@@ -3,7 +3,6 @@ import { apiSlice } from "./apiSlice";
 export const adminApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
-      // query: () => "/admin/users",
       query: (args) => {
         const params = new URLSearchParams(
           Object.entries(args)
@@ -15,37 +14,22 @@ export const adminApi = apiSlice.injectEndpoints({
         );
         return `/admin/users?${params.toString()}`;
       },
-
-      // serializeQueryArgs: ({ endpointName, queryArgs }) => {
-      //   const { page, ...rest } = queryArgs ?? {};
-      //   return `${endpointName}-${JSON.stringify(rest)}`;
-      // },
-
-      // merge: (currentCache, newResponse, { arg }) => {
-      //   if (arg?.page === 1) {
-      //     currentCache.data = newResponse.data;
-      //   } else {
-      //     currentCache.data.push(...newResponse.data);
-      //   }
-      //   currentCache.meta = newResponse.meta;
-      // },
-
-      // forceRefetch({ currentArg, previousArg }) {
-      //   if (!currentArg || !previousArg) return true;
-
-      //   // allow pagination fetch
-      //   if (currentArg.page !== previousArg.page) {
-      //     return true;
-      //   }
-
-      //   const { page: _, ...curr } = currentArg;
-      //   const { page: __, ...prev } = previousArg;
-
-      //   // refetch when filters change
-      //   return JSON.stringify(curr) !== JSON.stringify(prev);
-      // },
+    }),
+    getMetrics: builder.query({
+      query: () => {
+        return `/admin/analytics/notes`;
+      },
+    }),
+    getChartsAnalytics: builder.query({
+      query: () => {
+        return `/admin/analytics`;
+      },
     }),
   }),
 });
 
-export const { useGetUsersQuery } = adminApi;
+export const {
+  useGetUsersQuery,
+  useGetMetricsQuery,
+  useGetChartsAnalyticsQuery,
+} = adminApi;
