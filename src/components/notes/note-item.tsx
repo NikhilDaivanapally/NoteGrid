@@ -15,6 +15,7 @@ import {
 
 type NoteItemProps = {
   note: Note;
+  showActions?: boolean;
   onDelete: (noteId: string) => void;
   onToggleFavorite: (params: { id: string; isFavorite: boolean }) => void;
   onTogglePin: (params: { id: string; isPinned: boolean }) => void;
@@ -25,6 +26,7 @@ function NoteItemComponent({
   onDelete,
   onToggleFavorite,
   onTogglePin,
+  showActions = true,
 }: NoteItemProps) {
   // Memoize callbacks to prevent unnecessary re-renders
   const handleFavorite = useCallback(() => {
@@ -70,56 +72,63 @@ function NoteItemComponent({
         >
           {noteTitle}
         </h3>
+        {showActions && (
+          <div
+            className="flex gap-0.5"
+            role="toolbar"
+            aria-label="Note actions"
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handleFavorite}
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-yellow-500 cursor-pointer"
+                  aria-label={
+                    note.isFavorite
+                      ? "Remove from favorites"
+                      : "Add to favorites"
+                  }
+                >
+                  <Star
+                    className={cn(
+                      "size-5 transition-colors",
+                      note.isFavorite && "fill-yellow-400 text-yellow-400"
+                    )}
+                    aria-hidden="true"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {note.isFavorite ? "Remove from favorites" : "Add to favorites"}
+              </TooltipContent>
+            </Tooltip>
 
-        <div className="flex gap-0.5" role="toolbar" aria-label="Note actions">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={handleFavorite}
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-yellow-500 cursor-pointer"
-                aria-label={
-                  note.isFavorite ? "Remove from favorites" : "Add to favorites"
-                }
-              >
-                <Star
-                  className={cn(
-                    "size-5 transition-colors",
-                    note.isFavorite && "fill-yellow-400 text-yellow-400"
-                  )}
-                  aria-hidden="true"
-                />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {note.isFavorite ? "Remove from favorites" : "Add to favorites"}
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={handlePin}
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-primary cursor-pointer"
-                aria-label={note.isPinned ? "Unpin note" : "Pin note"}
-              >
-                <Pin
-                  className={cn(
-                    "size-5 transition-colors",
-                    note.isPinned && "fill-primary text-primary"
-                  )}
-                  aria-hidden="true"
-                />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {note.isPinned ? "Unpin note" : "Pin note"}
-            </TooltipContent>
-          </Tooltip>
-        </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handlePin}
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-primary cursor-pointer"
+                  aria-label={note.isPinned ? "Unpin note" : "Pin note"}
+                >
+                  <Pin
+                    className={cn(
+                      "size-5 transition-colors",
+                      note.isPinned && "fill-primary text-primary"
+                    )}
+                    aria-hidden="true"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {note.isPinned ? "Unpin note" : "Pin note"}
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        )}
       </header>
 
       {/* Content */}

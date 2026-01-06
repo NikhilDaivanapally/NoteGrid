@@ -64,23 +64,23 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {sections.map((section) => {
           if (
-            !section.loading &&
-            section.hideIfEmpty &&
-            section.items.length === 0
+            !section?.loading &&
+            section?.hideIfEmpty &&
+            section?.items.length === 0
           ) {
             return null;
           }
-          if (section.id == "activity" && !open) {
+          if (section?.id == "activity" && !open) {
             return null;
           }
           return (
-            <SidebarGroup key={section.id}>
-              <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+            <SidebarGroup key={section?.id}>
+              <SidebarGroupLabel>{section?.label}</SidebarGroupLabel>
               <SidebarMenu>
-                {section.items.map((item) => {
+                {section?.items.map((item) => {
                   const isActive =
                     item.href === pathname && item.label !== "See more";
-                  if (section.loading) {
+                  if (section?.loading) {
                     return <Skeleton key={item.id} className="h-8 w-full bg-muted-foreground/10" />;
                   }
                   return (
