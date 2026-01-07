@@ -32,14 +32,14 @@ export default function NoteGridHero() {
               {/* Actions */}
               <div className="mt-8 flex justify-center gap-3">
                 <Button size="lg" asChild>
-                  <Link href="/notes/new">
+                  <Link href="/dashboard/notes/new">
                     <Plus className="size-4" />
                     <span>Create Note</span>
                   </Link>
                 </Button>
 
                 <Button size="lg" variant="outline" asChild>
-                  <Link href="/notes">
+                  <Link href="/dashboard/notes">
                     <span>View Notes</span>
                   </Link>
                 </Button>
