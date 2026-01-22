@@ -7,7 +7,17 @@ export const metadata: Metadata = {
   title: "ResetPassword",
 };
 const page = () => {
-  return <ResetPasswordFormContainer />;
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full h-full grid place-items-center">
+          <Spinner className="size-10" />
+        </div>
+      }
+    >
+      <ResetPasswordFormContainer />
+    </Suspense>
+  );
 };
 
 export default page;
