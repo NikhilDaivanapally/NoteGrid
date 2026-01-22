@@ -1,15 +1,11 @@
-import ForgotPasswordForm from "@/components/forms/forgot-password-form";
+import ForgotPasswordFormContainer from "@/features/auth/components/forgot-password/forgot-password-form.container";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Forgotpassword",
 };
 const page = () => {
-  return (
-    <div className="w-full min-h-screen flex items-center justify-center">
-      <ForgotPasswordForm />
-    </div>
-  );
+  return <ForgotPasswordFormContainer />;
 };
 
 export default page;

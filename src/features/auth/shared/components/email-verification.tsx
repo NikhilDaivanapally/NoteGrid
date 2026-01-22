@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { verifyEmail } from "@/server/users";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const EmailVerification = ({ email }: { email: string }) => {
   const [countdown, setCountdown] = useState(30);
@@ -56,31 +57,40 @@ const EmailVerification = ({ email }: { email: string }) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="text-sm text-muted-foreground text-center">
-        We've sent a verification email to{" "}
-        <span className="font-medium text-black">{email}</span>. Please check
-        your email and click the link to activate your account.
-      </div>
-      <div className="text-center text-sm text-muted-foreground">
-        Didn't receive the email? Check your spam folder.
-      </div>
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full"
-        disabled={countdown > 0 || isResending}
-        onClick={handleResendVerificationEmail}
-      >
-        {isResending ? (
-          <>Resending ...</>
-        ) : countdown > 0 ? (
-          <>Resend in {countdown}s</>
-        ) : (
-          <>Resend verification email </>
-        )}
-      </Button>
-    </div>
+    <Card className="w-[400px] shadow-none border-none">
+      <CardHeader className="text-center space-y-1">
+        <CardTitle className="text-2xl">
+          <h1 className="text-xl">Verify your email</h1>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="text-sm text-muted-foreground text-center">
+            We've sent a verification email to{" "}
+            <span className="font-medium text-black">{email}</span>. Please
+            check your email and click the link to activate your account.
+          </div>
+          <div className="text-center text-sm text-muted-foreground">
+            Didn't receive the email? Check your spam folder.
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            disabled={countdown > 0 || isResending}
+            onClick={handleResendVerificationEmail}
+          >
+            {isResending ? (
+              <>Resending ...</>
+            ) : countdown > 0 ? (
+              <>Resend in {countdown}s</>
+            ) : (
+              <>Resend verification email </>
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
