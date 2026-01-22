@@ -1,15 +1,11 @@
-import LoginForm from "@/components/forms/login-form";
+import { LoginFormContainer } from "@/features/auth/components/login/login-form.container";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Login",
 };
 const page = () => {
-  return (
-    <div className="w-full min-h-screen flex items-center justify-center">
-      <LoginForm />
-    </div>
-  );
+  return <LoginFormContainer />;
 };
 
 export default page;

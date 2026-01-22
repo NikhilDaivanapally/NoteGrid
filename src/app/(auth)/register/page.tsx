@@ -1,15 +1,11 @@
-import RegisterForm from "@/components/forms/register-form";
+import RegisterFormContainer from "@/features/auth/components/register/register-form.container";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Register",
 };
 const page = () => {
-  return (
-    <div className="w-full min-h-screen flex items-center justify-center">
-      <RegisterForm />
-    </div>
-  );
+  return <RegisterFormContainer />;
 };
 
 export default page;

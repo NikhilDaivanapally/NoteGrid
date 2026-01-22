@@ -75,7 +75,7 @@ const SocialAuthButtons = ({
         }
       }
     },
-    [loadingProvider, callbackURL, onSuccess, onError]
+    [loadingProvider, callbackURL, onSuccess, onError],
   );
 
   return (
@@ -105,17 +105,16 @@ const SocialAuthButtons = ({
               disabled={isLoading}
               className="w-full relative"
             >
-              {content.icon}
-              <span className="capitalize">{content.text}</span>
-
               {!isLoading && isLastUsedMethod && (
                 <Badge
                   variant="secondary"
-                  className="absolute right-1 rounded-sm"
+                  className="absolute max-w-fit right-1 rounded-sm"
                 >
                   Last used
                 </Badge>
               )}
+              {content.icon}
+              <span className="capitalize">{content.text}</span>
             </Button>
           </Field>
         );

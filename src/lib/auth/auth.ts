@@ -7,7 +7,7 @@ import { admin as adminPlugin, lastLoginMethod } from "better-auth/plugins";
 import { sendVerifyEmail } from "../emails/sendVerifyEmail";
 import { nextCookies } from "better-auth/next-js";
 import { sendResetPasswordEmail } from "../emails/sendResetPasswordEmail";
-import { ac, admin, user } from "@/components/auth/permission";
+import { ac, admin, user } from "./permission";
 import { twoFactor } from "better-auth/plugins/two-factor";
 import { sendDeleteAccountVerificationEmail } from "../emails/sendDeleteAccountVerificationEmail";
 import { cleanupUserNotes } from "@/server/notes";
@@ -105,6 +105,5 @@ export const auth = betterAuth({
     //     throw new Error("ACCOUNT_BANNED");
     //   }
     // },
-    
   },
 });

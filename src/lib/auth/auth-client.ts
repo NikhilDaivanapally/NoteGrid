@@ -4,7 +4,7 @@ import {
   twoFactorClient,
   adminClient,
 } from "better-auth/client/plugins";
-import { admin, user, ac } from "@/components/auth/permission";
+import { admin, user, ac } from "./permission";
 
 export const authClient = createAuthClient({
   /** The base URL of the server (optional if you're using the same domain) */
