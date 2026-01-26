@@ -1,49 +1,49 @@
-import Note from "@/db/models/note.model";
-import connectToDatabase from "@/db/mongoose";
+import { getRecentNotes } from "@/features/notes/services";
+import { NotesSortBy } from "@/features/notes/types";
 import { auth } from "@/lib/auth/auth";
+import { AppError } from "@/lib/errors";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
-    await connectToDatabase();
-
     const session = await auth.api.getSession({
       headers: await headers(),
     });
-
     if (!session?.user) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      throw new AppError("Unauthorized", 401);
     }
 
     const { searchParams } = new URL(req.url);
 
     const limit = Number(searchParams.get("limit")) || 20;
-    const sortBy = searchParams.get("sortBy") || "updatedAt";
+    const sortBy = (searchParams.get("sortBy") || "updatedAt") as NotesSortBy;
     const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
-    // Build query
-    const query: any = {
+    const notes = await getRecentNotes({
       userId: session.user.id,
-    };
-
-    // Fetch data
-    const notes = await Note.find(query)
-      .sort({ [sortBy]: sortOrder })
-      .limit(limit)
-      .lean();
+      limit,
+      sortBy,
+      sortOrder,
+    });
 
     return NextResponse.json(
       {
         data: notes,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-    console.error("[GET /api/notes/recent]", error);
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: error.status },
+      );
+    }
+
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
