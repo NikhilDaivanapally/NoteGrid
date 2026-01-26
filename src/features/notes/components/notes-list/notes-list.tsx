@@ -9,7 +9,7 @@ import {
   useTogglePinnedMutation,
 } from "@/features/notes/api";
 import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
-import { DEFAULT_NOTE_QUERY } from "@/lib/constants/note-query";
+import { DEFAULT_NOTE_QUERY } from "../../constants";
 
 type Props = {
   notes: Note[];
