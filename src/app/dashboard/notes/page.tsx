@@ -1,5 +1,5 @@
 import PageWrapper from "@/components/layout/page-wrapper";
-import NotesPage from "@/components/notes/notes-page";
+import NotesPageContainer from "@/features/notes/components/notes-page/notes-page.container";
 import { normalizeNoteQuery } from "@/lib/utils/normalize-note-query";
 
 export default async function Page({
@@ -12,7 +12,7 @@ export default async function Page({
 
   return (
     <PageWrapper>
-      <NotesPage initialFilters={initialFilters} />
+      <NotesPageContainer initialFilters={initialFilters} />
     </PageWrapper>
   );
 }

@@ -1,55 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth/auth";
-import connectToDatabase from "@/db/mongoose";
-import Note from "@/db/models/note.model";
-import mongoose from "mongoose";
+import { AppError } from "@/lib/errors";
+import { deleteNote, getNoteById, updateNote } from "@/features/notes/services";
 
-// GET NOTE BY Id
+// GET NOTE BY ID
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
-
-  // Early validation
-  if (!id) {
-    return NextResponse.json({ error: "Missing note ID" }, { status: 400 });
-  }
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json(
-      { error: "Invalid note ID format" },
-      { status: 400 }
-    );
-  }
-
   try {
-    await connectToDatabase();
-
     const session = await auth.api.getSession({
       headers: await headers(),
     });
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    if (!session?.user) {
+      throw new AppError("Unauthorized", 401);
     }
 
-    const note = await Note.findOne({
-      _id: id,
-      userId: session.user.id,
-    }).lean();
+    const { id } = await params;
 
-    if (!note) {
-      return NextResponse.json({ message: "Note not found" }, { status: 404 });
-    }
+    const data = await getNoteById({ noteId: id, userId: session.user.id });
 
-    return NextResponse.json({ ...note }, { status: 200 });
+    return NextResponse.json(data);
   } catch (error) {
-    console.error("[GET /api/notes/:id]", error);
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: error.status },
+      );
+    }
+
     return NextResponse.json(
-      { message: "Failed to fetch note" },
-      { status: 500 }
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }
@@ -57,67 +40,38 @@ export async function GET(
 // UPDATE NOTE
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
-
-  // Early validation
-  if (!id) {
-    return NextResponse.json({ error: "Missing note ID" }, { status: 400 });
-  }
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json(
-      { error: "Invalid note ID format" },
-      { status: 400 }
-    );
-  }
-
-  // Parse and validate request body
-  let updates: Record<string, any>;
   try {
-    updates = await req.json();
-
-    if (!updates || typeof updates !== "object" || Array.isArray(updates)) {
-      return NextResponse.json(
-        { error: "Invalid request body: expected a JSON object" },
-        { status: 400 }
-      );
-    }
-  } catch {
-    return NextResponse.json(
-      { error: "Invalid JSON payload" },
-      { status: 400 }
-    );
-  }
-
-  try {
-    await connectToDatabase();
-
     const session = await auth.api.getSession({
       headers: await headers(),
     });
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    if (!session?.user) {
+      throw new AppError("Unauthorized", 401);
     }
 
-    const note = await Note.findOneAndUpdate(
-      { _id: id, userId: session.user.id },
-      updates,
-      { new: true, runValidators: true }
-    ).lean();
+    const { id } = await params;
 
-    if (!note) {
-      return NextResponse.json({ message: "Note not found" }, { status: 404 });
-    }
+    const updates = await req.json();
 
-    return NextResponse.json({ ...note }, { status: 200 });
+    const data = await updateNote({
+      noteId: id,
+      userId: session.user.id,
+      data: updates,
+    });
+
+    return NextResponse.json({ ...data }, { status: 200 });
   } catch (error) {
-    console.error("[PUT /api/notes/:id]", error);
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: error.status },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to update note" },
-      { status: 500 }
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }
@@ -125,51 +79,35 @@ export async function PUT(
 // DELETE NOTE
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
-
-  // Early validation
-  if (!id) {
-    return NextResponse.json({ error: "Missing note ID" }, { status: 400 });
-  }
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json(
-      { error: "Invalid note ID format" },
-      { status: 400 }
-    );
-  }
-
   try {
-    await connectToDatabase();
-
     const session = await auth.api.getSession({
       headers: await headers(),
     });
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    if (!session?.user) {
+      throw new AppError("Unauthorized", 401);
     }
 
-    const note = await Note.findOneAndDelete({
-      _id: id,
-      userId: session.user.id,
-    }).lean();
+    const { id } = await params;
 
-    if (!note) {
-      return NextResponse.json({ message: "Note not found" }, { status: 404 });
-    }
+    await deleteNote({ noteId: id, userId: session.user.id });
 
     return NextResponse.json(
       { message: "Note deleted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-    console.error("[DELETE /api/notes/:id]", error);
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: error.status },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to delete note" },
-      { status: 500 }
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }
