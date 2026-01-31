@@ -1,13 +1,13 @@
 import { SlidersHorizontal } from "lucide-react";
+import React from "react";
 
-type FilterConfig<T = any> = {
+export type FilterConfig = {
   key: string;
-  component: React.ComponentType<{
-    value: T;
-    onChange: (value: T) => void;
-  }>;
-  value: T;
-  onChange: (value: T) => void;
+  label: string;
+  component: React.ComponentType<any>;
+  value: unknown;
+  onChange: (value: unknown) => void;
+  options?: { label: string; value: string }[];
 };
 
 type FilterBarProps = {
@@ -22,12 +22,8 @@ const FilterBar = ({ filters }: FilterBarProps) => {
       </div>
 
       <div className="hidden gap-2 lg:flex">
-        {filters.map(({ key, component: Component, value, onChange }) => (
-          <Component
-            key={key}
-            value={value}
-            onChange={onChange}
-          />
+        {filters.map(({ component: Component, key, ...props }) => (
+          <Component key={key} {...props} />
         ))}
       </div>
     </>

@@ -1,9 +1,9 @@
 "use client";
 
 import { useFilters } from "@/hooks/use-filters";
-import { DEFAULT_NOTE_QUERY } from "@/lib/constants/note-query";
 import { useSyncUrlWithFilters } from "@/features/shared/hooks";
 import NotesPageView from "./notes-page.view";
+import { DEFAULT_NOTE_QUERY } from "../../constants";
 
 export default function NotesPageContainer({ initialFilters }: any) {
   const { filters, updateFilters, nextPage } = useFilters(

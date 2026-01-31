@@ -37,3 +37,10 @@ export type NoteStatus = "all" | "favorite" | "pinned";
 export type NotesSortBy = "updatedAt" | "createdAt" | "title";
 export type DateRange = "all" | "today" | "last7" | "last30";
 export type SortOrder = "asc" | "desc";
+
+export type NotesQuery = {
+  search: string;
+  status: NoteStatus;
+  dateRange: DateRange;
+  sortBy: NotesSortBy;
+};

@@ -1,13 +1,8 @@
-import PageWrapper from "@/components/layout/page-wrapper";
-import { ViewNote } from "@/components/notes/view";
+import { ViewNote } from "@/features/notes/components/note-view/note-view";
 
 const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
-  return (
-    <PageWrapper>
-      <ViewNote id={id} />
-    </PageWrapper>
-  );
+  return <ViewNote id={id} />;
 };
 
 export default page;
