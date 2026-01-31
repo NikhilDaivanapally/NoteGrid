@@ -2,51 +2,33 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "@/lib/validations";
 import { useLogin } from "../../hooks/use-login";
 import EmailVerification from "../../shared/components/email-verification";
-import z from "zod";
 import { LoginFormView } from "./login-form.view";
-
-type LoginFormData = z.infer<typeof loginSchema>;
+import { applyServerErrors } from "../../shared/apply-server-errors";
+import { useEffect } from "react";
+import { LoginFormData } from "../../types";
+import { loginSchema } from "../../validation";
 
 export const LoginFormContainer = () => {
-  const { login, verifyEmail } = useLogin();
+  const { login, status } = useLogin();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
+  useEffect(() => {
+    if (status.type === "field-error")
+      applyServerErrors<LoginFormData>(form, status.fieldErrors);
+  }, [status]);
+
   const onSubmit = async (data: LoginFormData) => {
-    const result = await login(data);
-
-    // FIELD ERRORS (server)
-    if (result?.fieldErrors) {
-      const fields = Object.keys(result.fieldErrors) as Array<
-        keyof LoginFormData
-      >;
-
-      if (fields.length > 0) {
-        form.setFocus(fields[0]);
-      }
-
-      fields.forEach((field) => {
-        const message = result.fieldErrors?.[field]?.[0];
-        if (!message) return;
-
-        form.setError(field, {
-          type: "server",
-          message,
-        });
-      });
-
-      return;
-    }
+    await login(data);
   };
 
-  if (verifyEmail) {
-    return <EmailVerification email={verifyEmail} />;
+  if (status.type == "verify-email") {
+    return <EmailVerification email={status.email} />;
   }
 
   return <LoginFormView form={form} onSubmit={onSubmit} />;

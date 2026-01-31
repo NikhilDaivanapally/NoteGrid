@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { verifyEmail } from "@/server/users";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { verifyEmail } from "../../server/actions";
 
 const EmailVerification = ({ email }: { email: string }) => {
   const [countdown, setCountdown] = useState(30);
@@ -76,7 +76,7 @@ const EmailVerification = ({ email }: { email: string }) => {
           <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="w-full disabled:cursor-not-allowed"
             disabled={countdown > 0 || isResending}
             onClick={handleResendVerificationEmail}
           >

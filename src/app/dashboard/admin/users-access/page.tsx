@@ -1,21 +1,17 @@
-import UsersFilter from "@/components/admin/users/users-filter";
-import UsersPage from "@/components/admin/users/users-page";
-import PageWrapper from "@/components/layout/page-wrapper";
-import { normalizeUsersQuery } from "@/lib/utils/normalize-users-query";
+import UsersPageContainer from "@/features/admin/users/components/users-page/users-page.container";
+import { normalizeQueryWithDefaults } from "@/features/shared/lib/normalize-query";
+import { DEFAULT_USERS_QUERY } from "@/lib/constants/users-query";
 
 export default async function page({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-
   const params = await searchParams;
-  const initialFilters = normalizeUsersQuery(params)
-
-  return (
-    // review breadcrumbs (dashboard > admin > users-access)
-    <PageWrapper>
-      <UsersPage initialFilters={initialFilters}/>
-    </PageWrapper>
+  const initialFilters = normalizeQueryWithDefaults(
+    params,
+    DEFAULT_USERS_QUERY,
   );
+
+  return <UsersPageContainer initialFilters={initialFilters} />;
 }

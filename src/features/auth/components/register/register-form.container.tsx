@@ -1,18 +1,17 @@
 "use client";
 
-import { registerSchema } from "@/lib/validations";
 import useRegister from "../../hooks/use-register";
-import z from "zod";
 import { useForm } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import EmailVerification from "../../shared/components/email-verification";
 import RegisterFormView from "./register-form.view";
-
-type RegisterFormData = z.infer<typeof registerSchema>;
+import { registerSchema } from "../../validation";
+import { RegisterFormData } from "../../types";
+import { useEffect } from "react";
+import { applyServerErrors } from "../../shared/apply-server-errors";
 
 const RegisterFormContainer = () => {
-  const { register, verifyEmail } = useRegister();
+  const { register, status } = useRegister();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -24,35 +23,17 @@ const RegisterFormContainer = () => {
     },
   });
 
+  useEffect(() => {
+    if (status.type === "field-error")
+      applyServerErrors<RegisterFormData>(form, status.fieldErrors);
+  }, [status]);
+
   const onSubmit = async (data: RegisterFormData) => {
-    const result = await register(data);
-
-    // FIELD ERRORS (server)
-    if (result?.fieldErrors) {
-      const fields = Object.keys(result.fieldErrors) as Array<
-        keyof RegisterFormData
-      >;
-
-      if (fields.length > 0) {
-        form.setFocus(fields[0]);
-      }
-
-      fields.forEach((field) => {
-        const message = result.fieldErrors?.[field]?.[0];
-        if (!message) return;
-
-        form.setError(field, {
-          type: "server",
-          message,
-        });
-      });
-
-      return;
-    }
+    await register(data);
   };
 
-  if (verifyEmail) {
-    return <EmailVerification email={verifyEmail} />;
+  if (status.type == "verify-email") {
+    return <EmailVerification email={status.email} />;
   }
 
   return (

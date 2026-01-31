@@ -1,24 +1,25 @@
-import { resetPasswordSchema } from "@/lib/validations";
-import { resetPassword as sendResetPassword } from "@/server/users";
+import { resetPassword as sendResetPassword } from "../server/actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import z from "zod";
-
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+import { AuthStatus, ResetPasswordFormData } from "../types";
+import { useState } from "react";
 
 const useResetPassword = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? undefined;
 
+  const [status, setStatus] = useState<AuthStatus>({ type: "idle" });
+
   const resetPassword = async (data: ResetPasswordFormData) => {
     if (!token) {
-      toast.error("Invalid or expired reset link");
+      setStatus({ type: "error", message: "Invalid or Reset link expired" });
       return;
     }
 
     try {
       const response = await sendResetPassword({ ...data, token });
+
       // SUCCESS
       if (response?.success) {
         toast.success(response.message ?? "Password reset successful");
@@ -26,24 +27,32 @@ const useResetPassword = () => {
         return;
       }
 
+      // INVALID TOKEN
       if (response?.error?.code === "INVALID_TOKEN") {
-        toast.error("Reset link has expired");
-        router.replace("/forgot-password");
+        setStatus({ type: "error", message: "Reset link expired" });
         return;
       }
 
+      // FIELD ERRORS
       if (response.fieldErrors) {
-        toast.error(response.message ?? "Please fix the highlighted errors");
-        return { fieldErrors: response.fieldErrors };
+        setStatus({
+          type: "field-error",
+          fieldErrors: response.fieldErrors,
+        });
+        return;
       }
 
-      // FALLBACK ERROR
-      toast.error(response?.message ?? "Failed to reset the password");
+      // GENERIC ERROR
+      toast.error(response.message ?? "Failed to reset the password");
     } catch (error) {
-      toast.error("Failed to reset the password");
+      setStatus({
+        type: "error",
+        message: "Something went wrong. Please try again.",
+      });
+      toast.error("Something went wrong. Please try again.");
     }
   };
-  return { token, resetPassword };
+  return { status, resetPassword };
 };
 
 export default useResetPassword;

@@ -1,12 +1,7 @@
-import PageWrapper from "@/components/layout/page-wrapper";
-import CreateNotePage from "@/components/notes/create-note-page";
+import CreateNote from "@/features/notes/components/create-note/create-note";
 
 const page = () => {
-  return (
-    <PageWrapper>
-      <CreateNotePage />
-    </PageWrapper>
-  );
+  return <CreateNote />;
 };
 
 export default page;

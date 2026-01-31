@@ -2,16 +2,16 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { resetPasswordSchema } from "@/lib/validations";
 import ResetPasswordFormView from "./reset-password-form.view";
 import useResetPassword from "../../hooks/use-reset-password";
 import InvalidResetPasswordView from "./invalid-reset-password.view";
-
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+import { resetPasswordSchema } from "../../validation";
+import { ResetPasswordFormData } from "../../types";
+import { useEffect } from "react";
+import { applyServerErrors } from "../../shared/apply-server-errors";
 
 const ResetPasswordFormContainer = () => {
-  const { token, resetPassword } = useResetPassword();
+  const { status, resetPassword } = useResetPassword();
 
   const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -21,9 +21,12 @@ const ResetPasswordFormContainer = () => {
     },
   });
 
-  if (!token) {
-    return <InvalidResetPasswordView />;
-  }
+  useEffect(() => {
+    if (status.type === "field-error")
+      applyServerErrors<ResetPasswordFormData>(form, status.fieldErrors);
+  }, [status]);
+
+  if (status.type === "error") return <InvalidResetPasswordView />;
 
   return <ResetPasswordFormView form={form} onSubmit={resetPassword} />;
 };
